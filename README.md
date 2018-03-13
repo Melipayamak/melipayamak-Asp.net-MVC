@@ -317,7 +317,7 @@ actionSoapClient.GetTodaySent(username, password);
 #### تعداد ارسال های کل
 
 ```js
-actionSoapClient.GetTodaySent(username, password);
+actionSoapClient.GetTotalSent(username, password);
 ```
 
 #### حذف ارسال منطقه ای
