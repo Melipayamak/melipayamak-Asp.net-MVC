@@ -9,6 +9,8 @@ SendSoapClient soapClient = new SendSoapClient();
 soapClient.SendSimpleSMS2(username, password, to, from, text, isFlash);
 //یا برای ارسال به مجموعه ای از مخاطبین
 soapClient.SendSimpleSMS(username, password, new string[] { to }, from, text, isFlash);
+//ارسال از خط خدماتی اشتراکی
+soapClient.SendByBaseNumber2(username, password, text, to, bodyId);
 
 ReceiveSoapClient receiveClient = new ReceiveSoapClient();
 TicketsSoapClient ticketClient = new TicketsSoapClient();
