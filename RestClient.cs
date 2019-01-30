@@ -8,6 +8,7 @@ public class RestClient
     private const string getCreditOp = "GetCredit";
     private const string getBasePriceOp = "GetBasePrice";
     private const string getUserNumbersOp = "GetUserNumbers";
+    private const string sendByBaseNumberOp = "BaseServiceNumber";
 
     private string UserName;
     private string Password;
@@ -41,6 +42,27 @@ public class RestClient
         }
     }
 
+    public RestResponse SendByBaseNumber(string text, string to, int bodyId)
+    {
+        var values = new Dictionary<string, string>
+        {
+            { "username", UserName },
+            { "password", Password },
+            { "text" , text },
+            { "to" , to },
+            { "bodyId" , bodyId }
+        };
+
+        var content = new FormUrlEncodedContent(values);
+
+        using (var httpClient = new HttpClient())
+        {
+            var response = httpClient.PostAsync(endpoint + sendByBaseNumberOp, content).Result;
+            var responseString = response.Content.ReadAsStringAsync().Result;
+
+            return JsonConvert.DeserializeObject<RestResponse>(responseString);
+        }
+    }
 
     public RestResponse GetDelivery(long recid)
     {
