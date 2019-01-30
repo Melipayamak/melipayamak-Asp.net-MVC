@@ -50,7 +50,7 @@ public class RestClient
             { "password", Password },
             { "text" , text },
             { "to" , to },
-            { "bodyId" , bodyId }
+            { "bodyId" , bodyId.ToString() }
         };
 
         var content = new FormUrlEncodedContent(values);
