@@ -167,6 +167,7 @@ soapClient.SendSimpleSMS(username, password, new string[] { to }, from, text, is
 #### ارسال از خط خدماتی اشتراکی
 
 ```js
+restClient.SendByBaseNumber(text, to, bodyId);
 soapClient.SendByBaseNumber2(username, password, text, to, bodyId);
 ```
 
