@@ -3,6 +3,7 @@ using MPMVC.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -40,8 +41,22 @@ namespace MPMVC.Controllers
 			const bool isFlash = false;
 			SendSoapClient soapClient = new SendSoapClient();
 			var result = soapClient.SendSimpleSMS2(username, password, to, from, text, isFlash);
-			return Content(result);
+			return Json(result, JsonRequestBehavior.AllowGet);
 		}
+
+		public async Task<ActionResult> SoapAsync()
+		{
+			const string username = "username";
+			const string password = "password";
+			const string from = "5000...";
+			const string to = "09123456789";
+			const string text = "تست وب سرویس ملی پیامک";
+			const bool isFlash = false;
+			SendSoapClient soapClient = new SendSoapClient();
+			var result = await soapClient.SendSimpleSMS2Async(username, password, to, from, text, isFlash);
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
 
 		public ActionResult Rest()
 		{
@@ -53,7 +68,20 @@ namespace MPMVC.Controllers
 			const bool isFlash = false;
 			RestClient restClient = new RestClient(username, password);
 			var result = restClient.Send(to, from, text, isFlash);
-			return Content(result.StrRetStatus);
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
+		public async Task<ActionResult> RestAsync()
+		{
+			const string username = "username";
+			const string password =  "password";
+			const string from = "5000...";
+			const string to = "09123456789";
+			const string text = "تست وب سرویس ملی پیامک";
+			const bool isFlash = false;
+			RestClientAsync restClient = new RestClientAsync(username, password);
+			var result = await restClient.SendAsync(to, from, text, isFlash);
+			return Json(result, JsonRequestBehavior.AllowGet);
 		}
 	}
 }
