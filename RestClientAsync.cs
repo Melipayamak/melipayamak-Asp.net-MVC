@@ -1,17 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MPMVC.Services
 {
-	public class RestClient
+	public class RestClientAsync
 	{
 		private const string endpoint = "https://rest.payamak-panel.com/api/SendSMS/";
 		private const string sendOp = "SendSMS";
@@ -26,46 +23,28 @@ namespace MPMVC.Services
 		private string UserName;
 		private string Password;
 
-		public RestClient(string username, string password)
+		public RestClientAsync(string username, string password)
 		{
 			UserName = username;
 			Password = password;
 		}
 
-		private RestResponse makeRequest(Dictionary<string, string> values, string op)
+		private async Task<RestResponse> makeRequestAsync(Dictionary<string, string> values, string op)
 		{
-			//HttpWebRequest request = WebRequest.CreateHttp(endpoint + op);
-			//request.Method = "POST";
+			var content = new FormUrlEncodedContent(values);
 
-			//using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-			//{
-			//	using (Stream responseStream = response.GetResponseStream())
-			//	{
-			//		using (StreamReader myStreamReader = new StreamReader(responseStream, Encoding.UTF8))
-			//		{
-			//			string responseJSON = myStreamReader.ReadToEnd();
-			//			return JsonConvert.DeserializeObject<RestResponse>(responseJSON);
-			//		}
-			//	}
-			//}
-
-			using (var client = new WebClient())
+			using (var httpClient = new HttpClient())
 			{
-				var response = client.UploadValues(endpoint + op, values.Aggregate(new NameValueCollection(),
-				(seed, current) => {
-					seed.Add(current.Key, current.Value);
-					return seed;
-				}));
+				var response = await httpClient.PostAsync(endpoint + op, content);
+				var responseString = await response.Content.ReadAsStringAsync();
 
-				return JsonConvert.DeserializeObject<RestResponse>(Encoding.Default.GetString(response));
+				return JsonConvert.DeserializeObject<RestResponse>(responseString);
 			}
 		}
 
-		
 
 
-
-		public RestResponse Send(string to, string from, string message, bool isflash)
+		public async Task<RestResponse> SendAsync(string to, string from, string message, bool isflash)
 		{
 			var values = new Dictionary<string, string>
 			{
@@ -77,10 +56,10 @@ namespace MPMVC.Services
 				{ "isFlash" , isflash.ToString() }
 			};
 
-			return makeRequest(values, sendOp);
+			return await makeRequestAsync(values, sendOp);
 		}
 
-		public RestResponse SendByBaseNumber(string text, string to, int bodyId)
+		public async Task<RestResponse> SendByBaseNumberAsync(string text, string to, int bodyId)
 		{
 			var values = new Dictionary<string, string>
 			{
@@ -91,10 +70,10 @@ namespace MPMVC.Services
 				{ "bodyId" , bodyId.ToString() }
 			};
 
-			return makeRequest(values, sendByBaseNumberOp);
+			return await makeRequestAsync(values, sendByBaseNumberOp);
 		}
 
-		public RestResponse GetDelivery(long recid)
+		public async Task<RestResponse> GetDeliveryAsync(long recid)
 		{
 			var values = new Dictionary<string, string>
 			{
@@ -103,11 +82,11 @@ namespace MPMVC.Services
 				{ "recID" , recid.ToString() },
 			};
 
-			return makeRequest(values, getDeliveryOp);
+			return await makeRequestAsync(values, getDeliveryOp);
 		}
 
 
-		public RestResponse GetMessages(int location, string from, string index, int count)
+		public async Task<RestResponse> GetMessagesAsync(int location, string from, string index, int count)
 		{
 			var values = new Dictionary<string, string>
 			{
@@ -119,10 +98,10 @@ namespace MPMVC.Services
 				{ "Count" , count.ToString() }
 			};
 
-			return makeRequest(values, getMessagesOp);
+			return await makeRequestAsync(values, getMessagesOp);
 		}
 
-		public RestResponse GetCredit()
+		public async Task<RestResponse> GetCreditAsync()
 		{
 			var values = new Dictionary<string, string>
 			{
@@ -130,10 +109,10 @@ namespace MPMVC.Services
 				{ "PassWord", Password },
 			};
 
-			return makeRequest(values, getCreditOp);
+			return await makeRequestAsync(values, getCreditOp);
 		}
 
-		public RestResponse GetBasePrice()
+		public async Task<RestResponse> GetBasePriceAsync()
 		{
 			var values = new Dictionary<string, string>
 			{
@@ -141,10 +120,10 @@ namespace MPMVC.Services
 				{ "PassWord", Password },
 			};
 
-			return makeRequest(values, getBasePriceOp);
+			return await makeRequestAsync(values, getBasePriceOp);
 		}
 
-		public RestResponse GetUserNumbers()
+		public async Task<RestResponse> GetUserNumbersAsync()
 		{
 			var values = new Dictionary<string, string>
 			{
@@ -152,9 +131,17 @@ namespace MPMVC.Services
 				{ "PassWord", Password },
 			};
 
-			return makeRequest(values, getUserNumbersOp);
+			return await makeRequestAsync(values, getUserNumbersOp);
 		}
 
 	}
-	
+
+
+	//response class
+	public class RestResponse
+	{
+		public string Value { get; set; }
+		public int RetStatus { get; set; }
+		public string StrRetStatus { get; set; }
+	}
 }
